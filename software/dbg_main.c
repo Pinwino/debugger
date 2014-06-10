@@ -27,7 +27,7 @@ extern unsigned char *find_device(unsigned int devid);
 
 void _irq_entry(void) {}
 
-unsigned int SDB_ADDRESS=0x00040000; //<------------ pon aquí la direccions wishbone del crossbar principal
+unsigned int SDB_ADDRESS=0x00400000; //<------------ pon aquí la direccions wishbone del crossbar principal
 
 extern uint32_t _endram;
 extern uint32_t _fstack;

@@ -87,20 +87,20 @@ function f_xwb_dpram_dbg(g_size : natural) return t_sdb_device
   
   constant c_NUM_TIMERS		 : natural range 1 to 3 := 1;
   
-  constant c_NUM_WB_MASTERS : integer := 5;
-  constant c_NUM_WB_SLAVES  : integer := 3;
+  constant c_NUM_WB_MASTERS : integer := 6;
+  constant c_NUM_WB_SLAVES  : integer := 2;
 
   constant c_MASTER_LM32	: integer := 0; ---has two
-  constant c_MASTER_OUT_PORT : integer := 2;
+  --constant c_MASTER_OUT_PORT : integer := 2;
   
   constant c_EXT_BRIDGE			: integer := 0;
-  constant c_SLAVE_DPRAM	 	: integer := 1-1;
-  constant c_SLAVE_UART		 	: integer := 2-1;
-  constant c_SLAVE_TICS		 	: integer := 3-1;
-  constant c_SLAVE_TIMER_IRQ	: integer := 4-1;
-  constant c_SLAVE_IRQ_CTRL	: integer := 5-1;
+  constant c_SLAVE_DPRAM	 	: integer := 1;
+  constant c_SLAVE_UART		 	: integer := 2;
+  constant c_SLAVE_TICS		 	: integer := 3;
+  constant c_SLAVE_TIMER_IRQ	: integer := 4;
+  constant c_SLAVE_IRQ_CTRL	: integer := 5;
 
-  constant c_EXT_BRIDGE_SDB : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"0003ffff", x"00030000");
+  constant c_EXT_BRIDGE_SDB : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"003fffff", x"00300000");
 	 
   --constant init_lm32_addr : t_wishbone_address := x"00040000";
 
@@ -143,13 +143,14 @@ function f_xwb_dpram_dbg(g_size : natural) return t_sdb_device
 		  
 
   constant c_INTERCONNECT_LAYOUT : t_sdb_record_array(c_NUM_WB_MASTERS-1 downto 0) :=
-    (c_SLAVE_DPRAM	 => f_sdb_embed_device(f_xwb_dpram_dbg(g_dbg_dpram_size), g_reset_vector),
-	  c_SLAVE_UART	    => f_sdb_embed_device(c_uart_sdb_dbg, x"00060000"), -- UART
-	  c_SLAVE_TICS	    => f_sdb_embed_device(c_xwb_tics_sdb_dbg, x"00070000"),
-	  c_SLAVE_TIMER_IRQ=> f_sdb_embed_device(c_irq_timer_sdb, x"00075000"),
-	  c_SLAVE_IRQ_CTRL	=> f_sdb_embed_device(c_irq_ctrl_sdb, x"00077000"));  
+    (c_EXT_BRIDGE		 => f_sdb_embed_bridge(c_EXT_BRIDGE_SDB, x"00c00000"), 
+	  c_SLAVE_DPRAM	 => f_sdb_embed_device(f_xwb_dpram_dbg(g_dbg_dpram_size), g_reset_vector),
+	  c_SLAVE_UART	    => f_sdb_embed_device(c_uart_sdb_dbg, x"00600000"), -- UART
+	  c_SLAVE_TICS	    => f_sdb_embed_device(c_xwb_tics_sdb_dbg, x"00700000"),
+	  c_SLAVE_TIMER_IRQ=> f_sdb_embed_device(c_irq_timer_sdb, x"00750000"),
+	  c_SLAVE_IRQ_CTRL	=> f_sdb_embed_device(c_irq_ctrl_sdb, x"00770000"));  
 
-  constant c_SDB_ADDRESS : t_wishbone_address := x"00040000";
+  constant c_SDB_ADDRESS : t_wishbone_address := x"00400000";
   
   signal cnx_master_out : t_wishbone_master_out_array(c_NUM_WB_MASTERS-1 downto 0);
   signal cnx_master_in  : t_wishbone_master_in_array(c_NUM_WB_MASTERS-1 downto 0);
@@ -184,8 +185,8 @@ function f_xwb_dpram_dbg(g_size : natural) return t_sdb_device
 begin
   running_indicator <= forced_lm32_reset_n;
   
-  master_o <= cnx_slave_in(c_MASTER_OUT_PORT);
-  cnx_slave_out(c_MASTER_OUT_PORT) <= master_i;
+  master_o <= cnx_master_out(c_EXT_BRIDGE);
+  cnx_master_in(c_EXT_BRIDGE) <= master_i;
   
   controller : process (clk_sys)
 	begin 
@@ -235,7 +236,7 @@ begin
 --------------------------------------
 	tic_cnt : xwb_tics 
 	generic map(
-		g_period              => c_FREQ_DIVIDER
+		g_period => c_FREQ_DIVIDER
 		)
 	port map(
 		clk_sys_i => clk_sys,
