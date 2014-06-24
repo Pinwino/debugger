@@ -5,15 +5,14 @@
 
 extern unsigned int SDB_ADDRESS;
 
-extern unsigned char *BASE_MINIC;
-extern unsigned char *BASE_EP;
-extern unsigned char *BASE_SOFTPLL;
-extern unsigned char *BASE_PPS_GEN;
-extern unsigned char *BASE_SYSCON;
 extern unsigned char *BASE_UART;
 extern unsigned char *BASE_ONEWIRE;
 extern unsigned char *BASE_ETHERBONE_CFG;
-extern unsigned char *BASE_FINE_DELAY;
+extern unsigned char *BASE_WRPC_RAM;
+extern unsigned char *BASE_TICS;
+extern unsigned char *BASE_TIMER;
+extern unsigned char *BASE_IRQ_CTRL;
+
 
 
 #define FMC_EEPROM_ADR 0x50

@@ -1,6 +1,6 @@
 /*
  * Automatically generated C config: don't edit
- * Tue Jun 10 14:28:17 2014
+ * Tue Jun 24 14:51:29 2014
  */
 #define AUTOCONF_INCLUDED
 #define CONFIG_PRINT_BUFSIZE 128
